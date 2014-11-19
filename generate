@@ -1,6 +1,22 @@
 #!/usr/bin/env ruby
 
+require 'snmp'
 
+aps = {}
+SNMP::Manager.open(Host: '192.168.YYY.XXX', Community: 'XXX') do |manager|
+  manager.walk 'SNMPv2-SMI::enterprises.14179.2.1.11.1.4' do |vb|
+    name = vb.value
+    mac = vb.name[-8..-2].to_a.map do |digit|
+      sprintf '%02X', digit
+    end.join ':'
+    puts name
+    puts vb.name[-8..-2].join '.'
+    puts mac
+    puts
+    ap = {name: name}
+    aps[mac] = ap
+  end
+end
 
-
+p aps
 
